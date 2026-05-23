@@ -4,6 +4,11 @@
   <a href="https://openjdk.org/"><img src="https://img.shields.io/badge/Java-21-ED8B00?style=flat&logo=openjdk&logoColor=white" alt="Java 21"></a>
   <a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F?style=flat&logo=springboot&logoColor=white" alt="Spring Boot 4.0.6"></a>
   <a href="https://gradle.org/"><img src="https://img.shields.io/badge/Gradle-9.4.1-02303A?style=flat&logo=gradle&logoColor=white" alt="Gradle 9.4.1"></a>
+  <a href="https://mapstruct.org/"><img src="https://img.shields.io/badge/MapStruct-1.6.3-A020F0?style=flat" alt="MapStruct 1.6.3"></a>
+  <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-17-4169E1?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL 17"></a>
+  <a href="https://www.liquibase.org/"><img src="https://img.shields.io/badge/Liquibase-DB%20Migrations-2962FF?style=flat&logo=liquibase&logoColor=white" alt="Liquibase"></a>
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker%20Compose-Infrastructure-2496ED?style=flat&logo=docker&logoColor=white" alt="Docker Compose"></a>
+
 </p>
 
 Микросервисная e-commerce платформа — сквозной проект курса **«Spring Cloud in a Nutshell»**.
@@ -14,6 +19,8 @@
 
 - [Технологический стек](#технологический-стек)
 - [Модули проекта](#модули-проекта)
+- [Инфраструктура (Docker)](#инфраструктура-docker)
+- [REST API](#rest-api)
 - [Сборка и запуск](#сборка-и-запуск)
 - [Структура репозитория](#структура-репозитория)
 
@@ -26,10 +33,14 @@
 | Java        | 21               |
 | Spring Boot | 4.0.6            |
 | Gradle      | 9.4.1 (wrapper)  |
+| PostgreSQL  | 17 (Alpine)      |
+| MapStruct   | 1.6.3            |
 
 ---
 
 ## Модули проекта
+
+### Gradle multi-module проект (`settings.gradle.kts`):
 
 | Модуль                 | Порт | Описание        |
 |------------------------|------|-----------------|
@@ -37,6 +48,49 @@
 | `notification-service` | 8083 | Уведомления     |
 | `order-service`        | 8082 | Заказы          |
 | `payment-service`      | 8084 | Платежи         |
+
+### Базы данных PostgreSQL
+
+Создаются скриптом `infrastructure/init-databases.sql` при первом старте контейнера:
+
+| База          | Сервис          |
+|---------------|-----------------|
+| `catalog_db`  | catalog-service |
+| `order_db`    | order-service   |
+| `payment_db`  | payment-service |
+| `keycloak_db` | Keycloak        |
+
+---
+
+## Инфраструктура (Docker)
+
+```bash
+docker compose up -d
+```
+
+| Сервис     | URL / порт       | Назначение  |
+|------------|------------------|-------------|
+| PostgreSQL | `localhost:5432` | БД сервисов |
+
+Остановка:
+
+```bash
+docker compose down
+```
+
+Данные PostgreSQL сохраняются в Docker volumes (`postgres-data`).
+
+---
+
+## REST API
+
+### Каталог (`catalog-service`)
+
+| Метод | Путь                    | Доступ    | Описание                                                      |
+|-------|-------------------------|-----------|---------------------------------------------------------------|
+| `GET` | `/api/v1/products`      | Публичный | Список товаров (пагинация, фильтры `categoryId`, `available`) |
+| `GET` | `/api/v1/products/{id}` | Публичный | Товар по ID                                                   |
+| `GET` | `/api/v1/categories`    | Публичный | Список категорий                                              |
 
 ---
 
