@@ -3,11 +3,12 @@
 <p>
   <a href="https://openjdk.org/"><img src="https://img.shields.io/badge/Java-21-ED8B00?style=flat&logo=openjdk&logoColor=white" alt="Java 21"></a>
   <a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F?style=flat&logo=springboot&logoColor=white" alt="Spring Boot 4.0.6"></a>
-  <a href="https://gradle.org/"><img src="https://img.shields.io/badge/Gradle-9.4.1-02303A?style=flat&logo=gradle&logoColor=white" alt="Gradle 9.4.1"></a>
-  <a href="https://mapstruct.org/"><img src="https://img.shields.io/badge/MapStruct-1.6.3-A020F0?style=flat" alt="MapStruct 1.6.3"></a>
-  <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-17-4169E1?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL 17"></a>
+  <a href="https://gradle.org/"><img src="https://img.shields.io/badge/Gradle-Build%20Tool-02303A?style=flat&logo=gradle&logoColor=white" alt="Gradle 9.4.1"></a>
+  <a href="https://mapstruct.org/"><img src="https://img.shields.io/badge/MapStruct-Code%20Generator-A020F0?style=flat" alt="MapStruct Code Generator"></a>
+  <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL 17"></a>
   <a href="https://www.liquibase.org/"><img src="https://img.shields.io/badge/Liquibase-DB%20Migrations-2962FF?style=flat&logo=liquibase&logoColor=white" alt="Liquibase"></a>
   <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker%20Compose-Infrastructure-2496ED?style=flat&logo=docker&logoColor=white" alt="Docker Compose"></a>
+  <a href="https://projectlombok.org/"><img src="https://img.shields.io/badge/Lombok-Annotation%20Processor-6DB33F?style=flat" alt="Lombok"></a>
 
 </p>
 
@@ -92,6 +93,15 @@ docker compose down
 | `GET` | `/api/v1/products/{id}` | Публичный | Товар по ID                                                   |
 | `GET` | `/api/v1/categories`    | Публичный | Список категорий                                              |
 
+### Заказы (`order-service`)
+
+| Метод  | Путь                         | Доступ    | Описание            |
+|--------|------------------------------|-----------|---------------------|
+| `POST` | `/api/v1/orders`             | Публичный | Создание заказа     |
+| `POST` | `/api/v1/orders/{id}/cancel` | Публичный | Отмена заказа по ID |
+| `GET`  | `/api/v1/orders/{id}`        | Публичный | Заказ по ID         |
+| `GET`  | `/api/v1/orders?customer=`   | Публичный | Заказы клиента      |
+
 ---
 
 ## Сборка и запуск
@@ -115,6 +125,8 @@ ShopFlow/
 ├── order-service/                # Заказы
 ├── payment-service/              # Платежи
 ├── notification-service/         # Уведомления
+├── infrastructure/               # Скрипт инициализации БД
+├── docker-compose.yaml           # Локальная инфраструктура
 └── gradle/libs.versions.toml     # Версии зависимостей
 ```
 

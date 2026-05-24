@@ -5,3 +5,11 @@ server:
 spring:
   application:
     name: order-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order_db
+    username: ${POSTGRES_USER:shopflow}
+    password: ${POSTGRES_PASSWORD:shopflow}
+  jpa:
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
