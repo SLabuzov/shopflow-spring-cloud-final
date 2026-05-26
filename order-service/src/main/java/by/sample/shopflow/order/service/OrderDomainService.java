@@ -1,11 +1,15 @@
 package by.sample.shopflow.order.service;
 
+import by.sample.shopflow.order.client.CatalogClient;
+import by.sample.shopflow.order.client.ProductResponse;
 import by.sample.shopflow.order.exception.OrderNotFoundException;
+import by.sample.shopflow.order.exception.OrderValidationException;
 import by.sample.shopflow.order.mapper.OrderMapper;
 import by.sample.shopflow.order.model.Order;
 import by.sample.shopflow.order.model.OrderItem;
 import by.sample.shopflow.order.repository.OrderRepository;
 import by.sample.shopflow.order.web.dto.CreateOrderRequest;
+import by.sample.shopflow.order.web.dto.OrderItemRequest;
 import by.sample.shopflow.order.web.dto.OrderResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,22 +30,44 @@ public class OrderDomainService implements OrderUseCase {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final CatalogClient catalogClient;
 
     public OrderDomainService(OrderRepository orderRepository,
-                              OrderMapper orderMapper) {
+                              OrderMapper orderMapper,
+                              CatalogClient catalogClient) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
+        this.catalogClient = catalogClient;
     }
 
     @Override
     public OrderResponse createOrder(UUID customerId, CreateOrderRequest request) {
+        List<ProductResponse> validatedProducts = validateProductsFromOrderRequest(request);
+
+        // ПРОВЕРКА: Количество найденных продуктов должно строго совпадать с запросом
+        if (validatedProducts.size() != request.items().size()) {
+            throw new OrderValidationException("One or more products from the request do not exist in the catalog");
+        }
+
+        Map<UUID, OrderItemRequest> itemsMap = request
+                .items()
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                OrderItemRequest::productId,
+                                Function.identity()
+                        )
+                );
+
         var order = new Order(customerId);
-        for (var product : request.items()) {
+        for (var checkedProduct : validatedProducts) {
+            OrderItemRequest requestItem = itemsMap.get(checkedProduct.id());
+
             var orderItem = new OrderItem(
-                    product.productId(),
-                    product.productName(),
-                    product.price(),
-                    product.quantity()
+                    checkedProduct.id(),
+                    checkedProduct.name(),
+                    checkedProduct.price(),
+                    requestItem.quantity()  // Количество берём из запроса
             );
             order.addItem(orderItem);
         }
@@ -72,5 +101,16 @@ public class OrderDomainService implements OrderUseCase {
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
         order.cancel();
         orderRepository.save(order);
+    }
+
+    private List<ProductResponse> validateProductsFromOrderRequest(CreateOrderRequest request) {
+        // Все productIds, которые используются в заказе
+        var productIds = request
+                .items()
+                .stream()
+                .map(OrderItemRequest::productId)
+                .toList();
+
+        return catalogClient.getProducts(productIds);
     }
 }

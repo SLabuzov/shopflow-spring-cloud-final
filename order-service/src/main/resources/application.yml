@@ -5,6 +5,18 @@ server:
 spring:
   application:
     name: order-service
+  cloud:
+    openfeign:
+      circuitbreaker:
+        # Включаем интеграцию с Circuit Breaker (Resilience4j)
+        enabled: true
+      # Конфигурация для конкретного клиента
+      client:
+        config:
+          catalog-service: # имя из @FeignClient(name = ...)
+            connect-timeout: 3000         # тайм-аут подключения (мс)
+            logger-level: basic           # уровень логирования Feign
+            read-timeout: 5000            # тайм-аут ожидания ответа (мс)
   datasource:
     url: jdbc:postgresql://localhost:5432/order_db
     username: ${POSTGRES_USER:shopflow}
@@ -13,3 +25,25 @@ spring:
     open-in-view: false
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+shopflow:
+  services:
+    catalog-url: http://localhost:8081
+
+# Конфигурация Resilience4j Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    instances:
+      catalog-service:
+        sliding-window-size: 10                           # размер окна: сколько последних вызовов учитываются для расчёта процента ошибок
+        minimum-number-of-calls: 5                        # минимальное количество вызовов, после которого начинается оценка процента ошибок
+        failure-rate-threshold: 50                        # порог ошибок (50% вызовов), при превышении которого цепь открывается
+        slow-call-rate-threshold: 50                      # 50% медленных вызовов → размыкание
+        slow-call-duration-threshold: 1s                  # вызов дольше 1 секунды считается медленным
+        permitted-number-of-calls-in-half-open-state: 2   # максимальное количество запросов, которые разрешено выполнить, когда цепь находится в состоянии HALF_OPEN
+        wait-duration-in-open-state: 30s                  # как долго цепь остаётся открытой перед переключением в состояние HALF_OPEN
+
+logging:
+  level:
+    io.github.resilience4j: DEBUG   # логирует события CircuitBreaker
+    org.springframework.cloud: DEBUG  # Spring Cloud CircuitBreaker / OpenFeign

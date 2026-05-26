@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +26,11 @@ public class ProductResource {
     @GetMapping("/{id}")
     public ProductResponse getById(@PathVariable UUID id) {
         return catalogUseCase.getProduct(id);
+    }
+
+    @GetMapping("/batch")
+    public List<ProductResponse> getProductsByIds(@RequestParam("id") List<UUID> ids) {
+        return catalogUseCase.getProducts(ids);
     }
 
     @GetMapping

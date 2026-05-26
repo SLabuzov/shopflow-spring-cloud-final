@@ -49,6 +49,14 @@ public class CatalogDomainService implements CatalogUseCase {
     }
 
     @Override
+    public List<ProductResponse> getProducts(List<UUID> ids) {
+        return productRepository.findAllByIdIn(ids)
+                .stream()
+                .map(productMapper::convert)
+                .toList();
+    }
+
+    @Override
     public PagedModel<ProductResponse> getProducts(UUID categoryId, Boolean available, Pageable pageable) {
         Page<ProductResponse> result = productRepository
                 .findFiltered(categoryId, available, pageable)

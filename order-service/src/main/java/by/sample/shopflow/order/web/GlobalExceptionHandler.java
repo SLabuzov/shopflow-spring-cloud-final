@@ -1,5 +1,6 @@
 package by.sample.shopflow.order.web;
 
+import by.sample.shopflow.order.exception.OrderValidationException;
 import by.sample.shopflow.order.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -17,6 +18,15 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problem.setTitle("Resource Not Found");
         problem.setType(URI.create("https://shopflow.com/errors/not-found"));
+        problem.setProperty("errorCode", ex.getErrorCode());
+        return problem;
+    }
+
+    @ExceptionHandler(OrderValidationException.class)
+    public ProblemDetail handleOrderValidation(OrderValidationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("Order Validation Failed");
+        problem.setType(URI.create("https://shopflow.com/errors/order-validation-failed"));
         problem.setProperty("errorCode", ex.getErrorCode());
         return problem;
     }

@@ -14,5 +14,7 @@ public interface CatalogUseCase {
 
     ProductResponse getProduct(UUID id);
 
+    List<ProductResponse> getProducts(List<UUID> ids);
+
     PagedModel<ProductResponse> getProducts(UUID categoryId, Boolean available, Pageable pageable);
 }

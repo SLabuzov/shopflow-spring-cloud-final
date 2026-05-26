@@ -3,6 +3,7 @@
 <p>
   <a href="https://openjdk.org/"><img src="https://img.shields.io/badge/Java-21-ED8B00?style=flat&logo=openjdk&logoColor=white" alt="Java 21"></a>
   <a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F?style=flat&logo=springboot&logoColor=white" alt="Spring Boot 4.0.6"></a>
+  <a href="https://spring.io/projects/spring-cloud"><img src="https://img.shields.io/badge/Spring%20Cloud-2025.1.1-6DB33F?style=flat&logo=spring&logoColor=white" alt="Spring Cloud 2025.1.1"></a>  
   <a href="https://gradle.org/"><img src="https://img.shields.io/badge/Gradle-Build%20Tool-02303A?style=flat&logo=gradle&logoColor=white" alt="Gradle 9.4.1"></a>
   <a href="https://mapstruct.org/"><img src="https://img.shields.io/badge/MapStruct-Code%20Generator-A020F0?style=flat" alt="MapStruct Code Generator"></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL 17"></a>
@@ -29,13 +30,15 @@
 
 ## Технологический стек
 
-| Компонент   | Версия / решение |
-|-------------|------------------|
-| Java        | 21               |
-| Spring Boot | 4.0.6            |
-| Gradle      | 9.4.1 (wrapper)  |
-| PostgreSQL  | 17 (Alpine)      |
-| MapStruct   | 1.6.3            |
+| Компонент    | Версия / решение |
+|--------------|------------------|
+| Java         | 21               |
+| Spring Boot  | 4.0.6            |
+| Spring Cloud | 2025.1.1         |
+| Gradle       | 9.4.1 (wrapper)  |
+| PostgreSQL   | 17 (Alpine)      |
+| MapStruct    | 1.6.3            |
+| Lombok       | 1.18.32          |
 
 ---
 
@@ -87,11 +90,12 @@ docker compose down
 
 ### Каталог (`catalog-service`)
 
-| Метод | Путь                    | Доступ    | Описание                                                      |
-|-------|-------------------------|-----------|---------------------------------------------------------------|
-| `GET` | `/api/v1/products`      | Публичный | Список товаров (пагинация, фильтры `categoryId`, `available`) |
-| `GET` | `/api/v1/products/{id}` | Публичный | Товар по ID                                                   |
-| `GET` | `/api/v1/categories`    | Публичный | Список категорий                                              |
+| Метод | Путь                                    | Доступ    | Описание                                                      |
+|-------|-----------------------------------------|-----------|---------------------------------------------------------------|
+| `GET` | `/api/v1/products`                      | Публичный | Список товаров (пагинация, фильтры `categoryId`, `available`) |
+| `GET` | `/api/v1/products/{id}`                 | Публичный | Товар по ID                                                   |
+| `GET` | `/api/v1/products/batch?id=id1,id2,...` | Публичный | Товары по списку IDs                                          |
+| `GET` | `/api/v1/categories`                    | Публичный | Список категорий                                              |
 
 ### Заказы (`order-service`)
 
