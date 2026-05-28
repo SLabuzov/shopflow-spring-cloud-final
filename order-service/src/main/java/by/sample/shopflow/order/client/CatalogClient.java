@@ -12,8 +12,7 @@ import java.util.UUID;
         configuration = CatalogClientConfig.class,
 //        fallback = CatalogClientFallback.class,
         fallbackFactory = CatalogClientFallbackFactory.class,
-        name = "catalog-service",
-        url = "${shopflow.services.catalog-url}"
+        name = "catalog-service"
 )
 public interface CatalogClient {
 

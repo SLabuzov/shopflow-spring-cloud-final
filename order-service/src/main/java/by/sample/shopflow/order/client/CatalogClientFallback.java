@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Component
 public class CatalogClientFallback implements CatalogClient {
+
     @Override
     public ProductResponse getProduct(UUID productId) {
         throw new CatalogClientUnavailableException("Order Service is unavailable");
