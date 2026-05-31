@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/catalog_db
+    username: ${POSTGRES_USER:shopflow}
+    password: ${POSTGRES_PASSWORD:shopflow}
+  jpa:
+    show-sql: true
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml

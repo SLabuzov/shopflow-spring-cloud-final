@@ -14,6 +14,7 @@ dependencies {
     implementation(libs.spring.boot.starter.liquibase)
     implementation(libs.spring.boot.starter.web)
 
+    implementation(libs.spring.cloud.starter.config)
     implementation(libs.spring.cloud.starter.netflix.eureka.client)
 
     implementation(libs.lombok)

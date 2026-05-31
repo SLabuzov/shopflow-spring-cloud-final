@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.web)
 
+    implementation(libs.spring.cloud.starter.config)
     implementation(libs.spring.cloud.starter.circuitbreaker.resilience4j)
     implementation(libs.spring.cloud.starter.netflix.eureka.client)
     implementation(libs.spring.cloud.starter.openfeign)
