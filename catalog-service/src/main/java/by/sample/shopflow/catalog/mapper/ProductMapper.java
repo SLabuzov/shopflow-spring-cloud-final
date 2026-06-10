@@ -1,7 +1,7 @@
 package by.sample.shopflow.catalog.mapper;
 
 import by.sample.shopflow.catalog.model.Product;
-import by.sample.shopflow.catalog.web.dto.ProductResponse;
+import by.sample.shopflow.common.dto.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;

@@ -4,5 +4,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":shopflow-common"))
+
     implementation(libs.spring.boot.starter.web)
 }

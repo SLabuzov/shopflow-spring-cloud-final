@@ -1,11 +1,8 @@
-package by.sample.shopflow.order.exception;
-
-import lombok.Getter;
+package by.sample.shopflow.common.exception;
 
 /**
  * Базовое исключение для всех бизнес-ошибок ShopFlow.
  */
-@Getter
 public abstract class ShopFlowException extends RuntimeException {
 
     private final String errorCode;
@@ -18,5 +15,9 @@ public abstract class ShopFlowException extends RuntimeException {
     protected ShopFlowException(String errorCode, String message, Throwable cause) {
         super(message, cause);
         this.errorCode = errorCode;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
     }
 }

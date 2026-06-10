@@ -1,7 +1,7 @@
 package by.sample.shopflow.order.web;
 
+import by.sample.shopflow.common.exception.ResourceNotFoundException;
 import by.sample.shopflow.order.exception.OrderValidationException;
-import by.sample.shopflow.order.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;

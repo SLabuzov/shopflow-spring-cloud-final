@@ -10,6 +10,8 @@ dependencyManagement {
 }
 
 dependencies {
+    implementation(project(":shopflow-common"))
+
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.liquibase)
     implementation(libs.spring.boot.starter.validation)

@@ -1,7 +1,7 @@
 package by.sample.shopflow.order.service;
 
+import by.sample.shopflow.common.dto.ProductResponse;
 import by.sample.shopflow.order.client.CatalogClient;
-import by.sample.shopflow.order.client.ProductResponse;
 import by.sample.shopflow.order.exception.OrderNotFoundException;
 import by.sample.shopflow.order.exception.OrderValidationException;
 import by.sample.shopflow.order.mapper.OrderMapper;

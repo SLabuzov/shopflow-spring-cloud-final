@@ -6,7 +6,7 @@ import by.sample.shopflow.catalog.mapper.ProductMapper;
 import by.sample.shopflow.catalog.repository.CategoryRepository;
 import by.sample.shopflow.catalog.repository.ProductRepository;
 import by.sample.shopflow.catalog.web.dto.CategoryResponse;
-import by.sample.shopflow.catalog.web.dto.ProductResponse;
+import by.sample.shopflow.common.dto.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;

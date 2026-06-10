@@ -1,4 +1,4 @@
-package by.sample.shopflow.order.exception;
+package by.sample.shopflow.common.exception;
 
 import java.util.UUID;
 

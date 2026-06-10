@@ -1,6 +1,6 @@
 package by.sample.shopflow.catalog.web;
 
-import by.sample.shopflow.catalog.exception.ResourceNotFoundException;
+import by.sample.shopflow.common.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;

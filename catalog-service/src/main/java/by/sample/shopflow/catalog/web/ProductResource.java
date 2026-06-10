@@ -1,7 +1,7 @@
 package by.sample.shopflow.catalog.web;
 
 import by.sample.shopflow.catalog.service.CatalogUseCase;
-import by.sample.shopflow.catalog.web.dto.ProductResponse;
+import by.sample.shopflow.common.dto.ProductResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.GetMapping;
