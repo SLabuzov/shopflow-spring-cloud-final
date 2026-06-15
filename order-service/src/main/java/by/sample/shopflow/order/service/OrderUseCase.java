@@ -14,5 +14,7 @@ public interface OrderUseCase {
 
     List<OrderResponse> getOrdersByCustomer(UUID customerId);
 
-    void cancelOrder(UUID orderId);
+    void cancelOrder(UUID orderId, String reason);
+
+    void markOrderPaid(UUID orderId);
 }

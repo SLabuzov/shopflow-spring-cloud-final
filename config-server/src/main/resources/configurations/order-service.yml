@@ -35,5 +35,8 @@ spring:
     password: ${POSTGRES_PASSWORD:shopflow}
   jpa:
     open-in-view: false
+  kafka:
+    consumer:
+      group-id: order-service-group
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

@@ -1,5 +1,6 @@
 package by.sample.shopflow.order.client;
 
+import by.sample.shopflow.common.dto.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

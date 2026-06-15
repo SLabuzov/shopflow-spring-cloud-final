@@ -73,4 +73,10 @@ public class Order {
         this.status = OrderStatus.CANCELLED;
     }
 
+    public void markPaid() {
+        if (this.status != OrderStatus.CREATED) {
+            throw new IllegalStateException("Can only pay for CREATED orders, current: " + status);
+        }
+        this.status = OrderStatus.PAID;
+    }
 }

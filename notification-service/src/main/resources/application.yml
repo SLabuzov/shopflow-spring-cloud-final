@@ -1,3 +1,10 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true # ← Использовать IP вместо hostname
+
 server:
   port: 8083
   shutdown: graceful
@@ -5,3 +12,10 @@ server:
 spring:
   application:
     name: notification-service
+  config:
+    import: optional:configserver:.
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server

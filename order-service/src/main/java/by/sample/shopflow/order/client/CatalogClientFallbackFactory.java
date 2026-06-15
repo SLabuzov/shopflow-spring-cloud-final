@@ -1,5 +1,6 @@
 package by.sample.shopflow.order.client;
 
+import by.sample.shopflow.common.dto.ProductResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;

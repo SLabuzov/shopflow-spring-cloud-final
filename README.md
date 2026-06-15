@@ -10,7 +10,7 @@
   <a href="https://www.liquibase.org/"><img src="https://img.shields.io/badge/Liquibase-DB%20Migrations-2962FF?style=flat&logo=liquibase&logoColor=white" alt="Liquibase"></a>
   <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker%20Compose-Infrastructure-2496ED?style=flat&logo=docker&logoColor=white" alt="Docker Compose"></a>
   <a href="https://projectlombok.org/"><img src="https://img.shields.io/badge/Lombok-Annotation%20Processor-6DB33F?style=flat" alt="Lombok"></a>
-
+  <a href="https://kafka.apache.org/"><img src="https://img.shields.io/badge/Apache%20Kafka-Message%20broker-231F20?style=flat&logo=apachekafka&logoColor=white" alt="Apache Kafka 4.0"></a>
 </p>
 
 Микросервисная e-commerce платформа — сквозной проект курса **«Spring Cloud in a Nutshell»**.
@@ -27,6 +27,7 @@
 6. [Структура репозитория](#6-структура-репозитория)
 7. [Service Discovery: что это и зачем](#7-service-discovery-что-это-и-зачем)
 8. [Config Server: что это и зачем](#8-config-server-что-это-и-зачем)
+9. [Событийная модель и Saga](#9-событийная-модель-и-saga)
 
 ---
 
@@ -41,6 +42,7 @@
 | PostgreSQL   | 17 (Alpine)      |
 | MapStruct    | 1.6.3            |
 | Lombok       | 1.18.32          |
+| Kafka        | 4.0.0            |
 
 ---
 
@@ -76,9 +78,11 @@
 docker compose up -d
 ```
 
-| Сервис     | URL / порт       | Назначение  |
-|------------|------------------|-------------|
-| PostgreSQL | `localhost:5432` | БД сервисов |
+| Сервис     | URL / порт            | Назначение                           |
+|------------|-----------------------|--------------------------------------|
+| PostgreSQL | `localhost:5432`      | БД сервисов                          |
+| Kafka      | `localhost:9092`      | Брокер (EXTERNAL listener для хоста) |
+| Kafka UI   | http://localhost:9080 | Просмотр топиков и сообщений         |
 
 Остановка:
 
@@ -138,6 +142,7 @@ ShopFlow/
 ├── payment-service/              # Платежи
 ├── notification-service/         # Уведомления
 ├── infrastructure/               # Скрипт инициализации БД
+├── shopflow-common/              # DTO, события, исключения
 ├── docker-compose.yaml           # Локальная инфраструктура
 └── gradle/libs.versions.toml     # Версии зависимостей
 ```
@@ -340,12 +345,37 @@ Eureka использует **REST API** для всех операций:
    └────────────┘ └────────────┘ └────────────┘
 ```
 
-### 2.2. Как работает взаимодействие
+### 8.3.2. Как работает взаимодействие
 
 1. **Config Server** запускается и подключается к бэкенду (Git, файловая система или Vault).
 2. Config Server **регистрируется** в Eureka (опционально).
 3. **Config Client** (каждый микросервис) при старте обращается к Config Server по HTTP: `GET http://config-server:8888/{application}/{profile}`.
 4. Config Server **находит** конфигурацию для данного приложения и профиля и возвращает JSON/YAML.
 5. Config Client **объединяет** полученные свойства со своими локальными и создаёт `Environment`.
+
+---
+
+## 9. Событийная модель и Saga
+
+### 9.1. Kafka-топики
+
+| Топик                                     | Издатель        | Потребители                             |
+|-------------------------------------------|-----------------|-----------------------------------------|
+| `order-events`                            | order-service   | payment-service, notification-service   |
+| `payment-events`                          | payment-service | order-service, notification-service     |
+| `order-events.DLT` / `payment-events.DLT` | —               | Dead Letter Queue при ошибках обработки |
+
+### 9.2. Доменные события (`shopflow-common`)
+
+| Событие                 | Поля (кратко)                               | Когда            |
+|-------------------------|---------------------------------------------|------------------|
+| `OrderCreatedEvent`     | orderId, customerId, totalAmount, createdAt | Заказ создан     |
+| `OrderCancelledEvent`   | orderId, customerId, reason, cancelledAt    | Компенсация Saga |
+| `PaymentCompletedEvent` | paymentId, orderId, amount, completedAt     | Оплата успешна   |
+| `PaymentFailedEvent`    | paymentId, orderId, reason, failedAt        | Оплата отклонена |
+
+### 9.3. Статусы заказа
+
+`CREATED` → `PAID` (при успешной оплате) или `CANCELLED` (при `PaymentFailedEvent`).
 
 ---

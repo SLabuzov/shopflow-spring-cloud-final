@@ -1,7 +1,10 @@
 package by.sample.shopflow.order.service;
 
 import by.sample.shopflow.common.dto.ProductResponse;
+import by.sample.shopflow.common.event.OrderCancelledEvent;
+import by.sample.shopflow.common.event.OrderCreatedEvent;
 import by.sample.shopflow.order.client.CatalogClient;
+import by.sample.shopflow.order.event.publisher.OrderEventPublisher;
 import by.sample.shopflow.order.exception.OrderNotFoundException;
 import by.sample.shopflow.order.exception.OrderValidationException;
 import by.sample.shopflow.order.mapper.OrderMapper;
@@ -16,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,13 +35,16 @@ public class OrderDomainService implements OrderUseCase {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final CatalogClient catalogClient;
+    private final OrderEventPublisher orderEventPublisher;
 
     public OrderDomainService(OrderRepository orderRepository,
                               OrderMapper orderMapper,
-                              CatalogClient catalogClient) {
+                              CatalogClient catalogClient,
+                              OrderEventPublisher orderEventPublisher) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.catalogClient = catalogClient;
+        this.orderEventPublisher = orderEventPublisher;
     }
 
     @Override
@@ -74,6 +81,15 @@ public class OrderDomainService implements OrderUseCase {
         var savedOrder = orderRepository.save(order);
         log.info("Created new order {} for the customer {}", savedOrder.getId(), customerId);
 
+        // Публикуем событие — запускаем Saga
+        var event = new OrderCreatedEvent(
+                order.getId(),
+                order.getCustomerId(),
+                order.getTotalAmount(),
+                order.getCreatedAt()
+        );
+        orderEventPublisher.publishOrderCreated(event);
+
         return orderMapper.convert(savedOrder);
     }
 
@@ -96,10 +112,26 @@ public class OrderDomainService implements OrderUseCase {
     }
 
     @Override
-    public void cancelOrder(UUID orderId) {
+    public void cancelOrder(UUID orderId, String reason) {
         var order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
         order.cancel();
+        orderRepository.save(order);
+
+        var event = new OrderCancelledEvent(
+                order.getId(),
+                order.getCustomerId(),
+                reason,
+                Instant.now()
+        );
+        orderEventPublisher.publishOrderCancelled(event);
+    }
+
+    @Override
+    public void markOrderPaid(UUID orderId) {
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+        order.markPaid();
         orderRepository.save(order);
     }
 

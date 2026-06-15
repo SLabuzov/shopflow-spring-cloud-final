@@ -1,5 +1,6 @@
 package by.sample.shopflow.order.client;
 
+import by.sample.shopflow.common.dto.ProductResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":shopflow-common"))
 
     implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.kafka)
     implementation(libs.spring.boot.starter.liquibase)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.web)

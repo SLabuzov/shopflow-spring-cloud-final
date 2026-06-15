@@ -3,13 +3,55 @@ services:
     image: postgres:17-alpine
     container_name: infra-db-postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:shopflow}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:shopflow}
+      POSTGRES_USER: ${POSTGRES_USER:-shopflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shopflow}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./infrastructure/init-databases.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+
+  kafka:
+    image: apache/kafka:4.0.0
+    container_name: infra-mb-kafka
+    environment:
+      # KRaft settings
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # Listeners
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: EXTERNAL
+
+      # Cluster
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # Log
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - ./volumes/kafka-data:/var/lib/kafka/data
+    ports:
+      - "9092:9092"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: infra-mb-kafka-ui
+    ports:
+      - "9080:8080" # Интерфейс будет доступен на http://localhost:9080
+    depends_on:
+      - kafka
+    environment:
+      # Настраиваем подключение к нашему кластеру
+      KAFKA_CLUSTERS_0_NAME: mb-kafka-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: infra-mb-kafka:29092
 
 volumes:
   postgres-data:

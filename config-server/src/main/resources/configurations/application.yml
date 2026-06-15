@@ -1,0 +1,21 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        # Включаем отправку заголовков типов
+        spring.json.use.type.headers: true
+    consumer:
+      auto-offset-reset: earliest
+      # Главный десериализатор для ключа
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      # Главный десериализатор для значения
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        # Указываем целевые десериализаторы, которые будут обернуты
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: by.sample.shopflow.common.event
+        spring.json.use.type.headers: true

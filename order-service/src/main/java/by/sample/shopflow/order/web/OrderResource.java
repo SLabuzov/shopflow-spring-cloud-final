@@ -45,6 +45,6 @@ public class OrderResource {
 
     @PostMapping("/{orderId}/cancel")
     public void cancelOrder(@PathVariable UUID orderId) {
-        orderUseCase.cancelOrder(orderId);
+        orderUseCase.cancelOrder(orderId, "Manual cancellation");
     }
 }
